@@ -27,7 +27,7 @@
 #include <pthread.h>
 //#include <sys/fcntl.h> 
 #include "client.h"
-
+#define DEBUG
 
 // command line arguments
 int serverPort;
@@ -225,7 +225,11 @@ void process_stats() {
       int f_usec = stop_time[index].tv_usec - start_time[index].tv_usec;      
       f_usec += (f_sec * 1000000);
       assert(f_usec >= 0);
-      
+
+      int ref_sec = start_time[index].tv_sec - start_time[0].tv_sec;
+      int ref_usec = start_time[index].tv_usec - start_time[0].tv_usec;
+      ref_usec += (ref_sec * 1000000);
+
       if ((uint)f_usec > max_file_usec) 
 	max_file_usec = f_usec;
       
@@ -238,7 +242,7 @@ void process_stats() {
       write_logFile("File",iteration_file_size[index], f_usec);
 
 #ifdef DEBUG    
-      printf("File: %d,%d, size: %u duration: %u usec\n", i, j, iteration_file_size[index], f_usec);
+      printf("File: %d,%d, size: %u duration: %u usec, ref_usec: %u usec\n", i, j, iteration_file_size[index], f_usec, ref_usec);
 #endif
     }
 
